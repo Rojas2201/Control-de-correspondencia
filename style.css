@@ -1,8 +1,78 @@
-body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
+body{
+    background:#f4f6f9;
+    font-family:'Segoe UI', sans-serif;
 }
 
-h1 {
-    color: #004080;
+.header-institucional{
+    background:#003366;
+    color:white;
+    padding:20px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.titulo-area h2{
+    margin:0;
+    font-size:24px;
+    font-weight:700;
+}
+
+.titulo-area h5{
+    margin:0;
+    color:#d6e4f0;
+}
+
+.titulo-area h3{
+    margin-top:8px;
+    color:white;
+}
+
+.card{
+    border:none;
+    border-radius:12px;
+    box-shadow:0 3px 12px rgba(0,0,0,.12);
+}
+
+.card-header{
+    font-weight:600;
+}
+
+.bg-primary{
+    background:#003366 !important;
+}
+
+.bg-secondary{
+    background:#005A9C !important;
+}
+
+.bg-dark{
+    background:#002244 !important;
+}
+
+.btn-success{
+    background:#198754;
+}
+
+.table-primary{
+    background:#003366;
+    color:white;
+}
+
+table thead th{
+    background:#003366 !important;
+    color:white !important;
+    text-align:center;
+}
+
+table tbody tr:hover{
+    background:#eef5fc;
+}
+
+.form-control:focus,
+.form-select:focus{
+    border-color:#005A9C;
+    box-shadow:0 0 0 .2rem rgba(0,90,156,.25);
 }
