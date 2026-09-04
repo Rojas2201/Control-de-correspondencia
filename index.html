@@ -4,203 +4,420 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Control de Correspondencia</title>
+<title>Sistema de Control de Correspondencia</title>
 
-<link hrefn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesomell.min.css
+
+<script/cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.jsscript>
 
 <style>
+
+/* =====================================================
+   VARIABLES INSTITUCIONALES
+===================================================== */
+
+:root{
+    --azul:#0A3D62;
+    --azul2:#1E5F92;
+    --gris:#f4f6f9;
+    --blanco:#ffffff;
+    --verde:#27ae60;
+    --rojo:#e74c3c;
+}
+
+/* =====================================================
+   GENERALES
+===================================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI,Tahoma,sans-serif;
+}
+
 body{
-    background:#f1f5f9;
-    font-family:Segoe UI, sans-serif;
+    background:var(--gris);
 }
 
-.topbar{
-    background:#0f172a;
-    color:white;
-    height:70px;
+/* =====================================================
+   LOGIN
+===================================================== */
+
+#loginScreen{
+    width:100%;
+    height:100vh;
     display:flex;
+    justify-content:center;
     align-items:center;
-    justify-content:space-between;
-    padding:0 20px;
+    background:linear-gradient(135deg,var(--azul),var(--azul2));
 }
 
-.main{
-    display:flex;
+.login-card{
+    background:white;
+    width:350px;
+    padding:35px;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+
+.login-card h2{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.login-card input{
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+}
+
+.login-card button{
+    width:100%;
+    padding:12px;
+    background:var(--azul);
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+/* =====================================================
+   SISTEMA
+===================================================== */
+
+#app{
+    display:none;
 }
 
 .sidebar{
     width:250px;
-    background:white;
-    min-height:100vh;
-    padding:20px;
-    border-right:1px solid #ddd;
+    background:var(--azul);
+    height:100vh;
+    position:fixed;
+    color:white;
 }
 
-.content{
-    flex:1;
-    padding:20px;
+.logo{
+    text-align:center;
+    padding:25px;
+    border-bottom:1px solid rgba(255,255,255,.2);
 }
 
-.card-box{
+.sidebar ul{
+    list-style:none;
+}
+
+.sidebar ul li{
+    padding:15px 20px;
+    cursor:pointer;
+}
+
+.sidebar ul li:hover{
+    background:rgba(255,255,255,.15);
+}
+
+.main{
+    margin-left:250px;
+    padding:25px;
+}
+
+.section{
+    display:none;
+}
+
+.section.active{
+    display:block;
+}
+
+.card{
     background:white;
     padding:20px;
-    border-radius:10px;
-    box-shadow:0 0 10px rgba(0,0,0,.08);
+    border-radius:15px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
     margin-bottom:20px;
 }
 
-.stat{
-    text-align:center;
-    font-size:28px;
-    font-weight:bold;
+.card h2{
+    margin-bottom:15px;
+    color:var(--azul);
 }
 
-.table thead th{
-    background:#0f172a;
+.grid{
+    display:grid;
+    gap:15px;
+}
+
+.grid-2{
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+}
+
+input,select,textarea{
+    width:100%;
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:8px;
+}
+
+textarea{
+    resize:vertical;
+}
+
+.btn{
+    background:var(--azul);
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.btn-danger{
+    background:var(--rojo);
+}
+
+.btn-success{
+    background:var(--verde);
+}
+
+/* =====================================================
+   TABLAS
+===================================================== */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th{
+    background:var(--azul);
     color:white;
 }
-</style>
 
+th,td{
+    padding:10px;
+    border:1px solid #ddd;
+    text-align:left;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
+.stat{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.stat h3{
+    font-size:30px;
+    color:var(--azul);
+}
+
+</style>
 </head>
 <body>
 
-<div class="topbar">
-    <div>
-        <strong>ENEE</strong><br>
-        Control de Correspondencia
+<!-- =====================================================
+     LOGIN
+===================================================== -->
+
+<div id="loginScreen">
+
+    <div class="login-card">
+        <h2>Control de Correspondencia</h2>
+
+        <input type="text" id="usuario" placeholder="Usuario">
+        <input type="password" id="password" placeholder="Contraseña">
+
+        <button onclick="login()">
+            Ingresar
+        </button>
     </div>
 
-    <div>Administrador</div>
 </div>
 
-<div class="main">
+<!-- =====================================================
+     SISTEMA PRINCIPAL
+===================================================== -->
+
+<div id="app">
 
     <div class="sidebar">
 
-        <div class="card-box">
-            <h5>Estadísticas</h5>
-
-            <div>
-                Total:
-                <span id="total">0</span>
-            </div>
-
-            <div>
-                Entradas:
-                <span id="entradas">0</span>
-            </div>
-
-            <div>
-                Salidas:
-                <span id="salidas">0</span>
-            </div>
+        <div class="logo">
+            <h2>Correspondencia</h2>
         </div>
+
+        <ul>
+            <li onclick="mostrarSeccion('dashboard')">
+                <i class="fas fa-chart-line"></i>
+                Dashboard
+            </li>
+
+            <li onclick="mostrarSeccion('recepcion')">
+                <i class="fas fa-file-import"></i>
+                Recepción
+            </li>
+
+            <li onclick="mostrarSeccion('consultas')">
+                <i class="fas fa-search"></i>
+                Consultas
+            </li>
+
+            <li onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Salir
+            </li>
+        </ul>
 
     </div>
 
-    <div class="content">
+    <div class="main">
 
-        <div class="card-box">
+        <!-- DASHBOARD -->
 
-            <h4>Nueva Correspondencia</h4>
+        <section id="dashboard" class="section active">
 
-            <div class="row">
+            <div class="card">
+                <h2>Dashboard</h2>
 
-                <div class="col-md-3">
-                    <label>Número</label>
-                    <input
-                    type="text"
-                    id="numero"
-                    class="form-control"
-                    readonly>
-                </div>
+                <div class="stats">
 
-                <div class="col-md-3">
-                    <label>Fecha</label>
-                    <input
-                    type="date"
-                    id="fecha"
-                    class="form-control">
-                </div>
+                    <div class="stat">
+                        <span>Documentos Hoy</span>
+                        <h3 id="docHoy">0</h3>
+                    </div>
 
-                <div class="col-md-3">
-                    <label>Tipo</label>
+                    <div class="stat">
+                        <span>Total Registros</span>
+                        <h3 id="totalDocs">0</h3>
+                    </div>
 
-                    <select
-                    id="tipo"
-                    class="form-select">
-
-                        <option>Entrada</option>
-                        <option>Salida</option>
-
-                    </select>
-                </div>
-
-                <div class="col-md-3">
-                    <label>Estado</label>
-
-                    <select
-                    id="estado"
-                    class="form-select">
-
-                        <option>Pendiente</option>
-                        <option>En Proceso</option>
-                        <option>Finalizado</option>
-
-                    </select>
                 </div>
 
             </div>
 
-            <br>
+        </section>
 
-            <input
-            id="remitente"
-            class="form-control mb-2"
-            placeholder="Remitente">
+        <!-- RECEPCION -->
 
-            <input
-            id="destinatario"
-            class="form-control mb-2"
-            placeholder="Destinatario">
+        <section id="recepcion" class="section">
 
-            <input
-            id="asunto"
-            class="form-control mb-3"
-            placeholder="Asunto">
+            <div class="card">
 
-            <button
-            class="btn btn-primary"
-            onclick="guardarRegistro()">
+                <h2>Recepción de Correspondencia</h2>
 
-                Guardar Registro
+                <div class="grid grid-2">
 
-            </button>
+                    <div>
+                        <label>Departamento que Remite</label>
+                        <input id="departamento">
+                    </div>
 
-        </div>
+                    <div>
+                        <label>Tipo Documento</label>
+                        <select id="tipo">
+                            <option>Oficio</option>
+                            <option>Memorándum</option>
+                            <option>Circular</option>
+                            <option>Informe</option>
+                        </select>
+                    </div>
 
-        <div class="card-box">
+                    <div>
+                        <label>No. Documento</label>
+                        <input id="numero">
+                    </div>
 
-            <h4>Registros</h4>
+                    <div>
+                        <label>Fecha Recepción</label>
+                        <input type="date" id="fechaRecepcion">
+                    </div>
 
-            <table class="table table-bordered">
+                    <div>
+                        <label>Fecha Emisión</label>
+                        <input type="date" id="fechaEmision">
+                    </div>
 
-                <thead>
-                    <tr>
-                        <th>Número</th>
-                        <th>Fecha</th>
-                        <th>Tipo</th>
-                        <th>Remitente</th>
-                        <th>Estado</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
+                </div>
 
-                <tbody id="tablaRegistros"></tbody>
+                <br>
 
-            </table>
+                <label>Asunto</label>
+                <textarea id="asunto"></textarea>
 
-        </div>
+                <br><br>
+
+                <label>Observaciones</label>
+                <textarea id="observaciones"></textarea>
+
+                <br><br>
+
+                <button class="btn btn-success" onclick="guardarRegistro()">
+                    Guardar Documento
+                </button>
+
+            </div>
+
+        </section>
+
+        <!-- CONSULTAS -->
+
+        <section id="consultas" class="section">
+
+            <div class="card">
+
+                <h2>Consulta de Correspondencia</h2>
+
+                <div class="grid grid-2">
+
+                    <div>
+                        <label>Fecha Inicio</label>
+                        <input type="date" id="fInicio">
+                    </div>
+
+                    <div>
+                        <label>Fecha Fin</label>
+                        <input type="date" id="fFin">
+                    </div>
+
+                </div>
+
+                <br>
+
+                <button class="btn" onclick="filtrar()">
+                    Buscar
+                </button>
+
+                <button class="btn btn-success" onclick="generarPDF()">
+                    PDF
+                </button>
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Departamento</th>
+                            <th>Documento</th>
+                            <th>Recepción</th>
+                            <th>Asunto</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tablaDatos"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
 
     </div>
 
@@ -208,154 +425,227 @@ body{
 
 <script>
 
-let registros =
-JSON.parse(
-localStorage.getItem("correspondencia")
-) || [];
+/* =====================================================
+   LOGIN
+===================================================== */
 
-function generarNumero(){
+function login(){
 
-    let anio = new Date().getFullYear();
+    const user=document.getElementById("usuario").value;
+    const pass=document.getElementById("password").value;
 
-    let correlativo =
-    String(registros.length + 1)
-    .padStart(5,"0");
+    if(user==="admin" && pass==="123456"){
 
-    return `COR-${anio}-${correlativo}`;
+        document.getElementById("loginScreen").style.display="none";
+        document.getElementById("app").style.display="block";
+
+        cargarTabla();
+        actualizarDashboard();
+
+    }else{
+        alert("Credenciales incorrectas");
+    }
 }
 
-function actualizarNumero(){
-
-    document.getElementById("numero").value =
-    generarNumero();
+function logout(){
+    location.reload();
 }
+
+/* =====================================================
+   NAVEGACION
+===================================================== */
+
+function mostrarSeccion(id){
+
+    document.querySelectorAll(".section").forEach(sec=>{
+        sec.classList.remove("active");
+    });
+
+    document.getElementById(id).classList.add("active");
+}
+
+/* =====================================================
+   LOCAL STORAGE
+===================================================== */
+
+function obtenerDatos(){
+    return JSON.parse(localStorage.getItem("documentos")) || [];
+}
+
+/* =====================================================
+   GUARDAR
+===================================================== */
 
 function guardarRegistro(){
 
-    let fecha =
-    document.getElementById("fecha").value;
+    let documentos=obtenerDatos();
 
-    if(fecha === ""){
+    documentos.push({
 
-        alert("Debe ingresar la fecha");
+        id:Date.now(),
+        departamento:departamento.value,
+        tipo:tipo.value,
+        numero:numero.value,
+        fechaRecepcion:fechaRecepcion.value,
+        fechaEmision:fechaEmision.value,
+        asunto:asunto.value,
+        observaciones:observaciones.value
 
-        return;
-    }
-
-    let registro = {
-
-        numero:
-        document.getElementById("numero").value,
-
-        fecha:
-        fecha,
-
-        tipo:
-        document.getElementById("tipo").value,
-
-        estado:
-        document.getElementById("estado").value,
-
-        remitente:
-        document.getElementById("remitente").value,
-
-        destinatario:
-        document.getElementById("destinatario").value,
-
-        asunto:
-        document.getElementById("asunto").value
-    };
-
-    registros.push(registro);
+    });
 
     localStorage.setItem(
-        "correspondencia",
-        JSON.stringify(registros)
+        "documentos",
+        JSON.stringify(documentos)
     );
+
+    alert("Documento guardado");
+
+    document.querySelectorAll(
+    "#recepcion input,#recepcion textarea")
+    .forEach(x=>x.value="");
 
     cargarTabla();
-
-    actualizarNumero();
-
-    limpiarFormulario();
-
-    alert("Registro guardado correctamente");
+    actualizarDashboard();
 }
 
-function limpiarFormulario(){
+/* =====================================================
+   TABLA
+===================================================== */
 
-    document.getElementById("fecha").value = "";
-    document.getElementById("remitente").value = "";
-    document.getElementById("destinatario").value = "";
-    document.getElementById("asunto").value = "";
-}
+function cargarTabla(datos=null){
 
-function eliminarRegistro(numero){
+    const registros=datos || obtenerDatos();
 
-    registros =
-    registros.filter(
-    r => r.numero !== numero
-    );
+    let html="";
 
-    localStorage.setItem(
-        "correspondencia",
-        JSON.stringify(registros)
-    );
+    registros.forEach(doc=>{
 
-    cargarTabla();
-}
-
-function cargarTabla(){
-
-    let tabla =
-    document.getElementById(
-    "tablaRegistros"
-    );
-
-    tabla.innerHTML = "";
-
-    registros.forEach(registro => {
-
-        tabla.innerHTML += `
+        html+=`
         <tr>
-            <td>${registro.numero}</td>
-            <td>${registro.fecha}</td>
-            <td>${registro.tipo}</td>
-            <td>${registro.remitente}</td>
-            <td>${registro.estado}</td>
+            <td>${doc.numero}</td>
+            <td>${doc.departamento}</td>
+            <td>${doc.tipo}</td>
+            <td>${doc.fechaRecepcion}</td>
+            <td>${doc.asunto}</td>
             <td>
-                <button
-                class="btn btn-danger btn-sm"
-                onclick="eliminarRegistro('${registro.numero}')">
+                <button class="btn-danger btn"
+                onclick="eliminar(${doc.id})">
                 Eliminar
                 </button>
             </td>
         </tr>
         `;
-
     });
 
+    tablaDatos.innerHTML=html;
+}
+
+/* =====================================================
+   ELIMINAR
+===================================================== */
+
+function eliminar(id){
+
+    let documentos=obtenerDatos()
+    .filter(x=>x.id!==id);
+
+    localStorage.setItem(
+    "documentos",
+    JSON.stringify(documentos));
+
+    cargarTabla();
     actualizarDashboard();
 }
 
-function actualizarDashboard(){
+/* =====================================================
+   FILTROS
+===================================================== */
 
-    document.getElementById("total").innerText =
-    registros.length;
+function filtrar(){
 
-    document.getElementById("entradas").innerText =
-    registros.filter(
-    r => r.tipo === "Entrada"
-    ).length;
+    let docs=obtenerDatos();
 
-    document.getElementById("salidas").innerText =
-    registros.filter(
-    r => r.tipo === "Salida"
-    ).length;
+    let inicio=fInicio.value;
+    let fin=fFin.value;
+
+    if(inicio){
+        docs=docs.filter(d=>
+        d.fechaRecepcion>=inicio);
+    }
+
+    if(fin){
+        docs=docs.filter(d=>
+        d.fechaRecepcion<=fin);
+    }
+
+    cargarTabla(docs);
 }
 
-actualizarNumero();
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+function actualizarDashboard(){
+
+    let docs=obtenerDatos();
+
+    totalDocs.innerText=docs.length;
+
+    const hoy=new Date()
+    .toISOString()
+    .split("T")[0];
+
+    let hoyDocs=docs.filter(
+    x=>x.fechaRecepcion===hoy);
+
+    docHoy.innerText=hoyDocs.length;
+}
+
+/* =====================================================
+   PDF
+===================================================== */
+
+function generarPDF(){
+
+    const {jsPDF}=window.jspdf;
+
+    const pdf=new jsPDF();
+
+    pdf.setFontSize(16);
+
+    pdf.text(
+    "Reporte de Correspondencia",
+    20,
+    20);
+
+    let y=40;
+
+    obtenerDatos().forEach(doc=>{
+
+        pdf.text(
+        `${doc.numero} | ${doc.departamento} | ${doc.fechaRecepcion}`,
+        10,
+        y
+        );
+
+        y+=10;
+
+        if(y>270){
+            pdf.addPage();
+            y=20;
+        }
+
+    });
+
+    pdf.save("Correspondencia.pdf");
+}
+
+/* =====================================================
+   INICIALIZACION
+===================================================== */
+
 cargarTabla();
+actualizarDashboard();
 
 </script>
 
